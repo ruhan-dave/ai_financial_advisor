@@ -14,8 +14,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 # If using Ollama embeddings, use: from langchain_community.embeddings import OllamaEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from tqdm.auto import tqdm
-from langchain_core.prompts import PromptTemplate, ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
+
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda, Runnable
