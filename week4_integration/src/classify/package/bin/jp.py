@@ -1,4 +1,4 @@
-#!/opt/miniconda3/bin/python
+#!/opt/miniconda3/envs/myenv/bin/python3.12
 
 import sys
 import json

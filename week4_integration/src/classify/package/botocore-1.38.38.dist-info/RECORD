@@ -3,6 +3,7 @@ botocore-1.38.38.dist-info/LICENSE.txt,sha256=DVQuDIgE45qn836wDaWnYhSdxoLXgpRRKH
 botocore-1.38.38.dist-info/METADATA,sha256=xJBBifJj7tWSN9QkegGmy4WpRtd5GzJxpzzuKfkUCuw,5672
 botocore-1.38.38.dist-info/NOTICE,sha256=HRxabz1oyxH0-tGvqGp0UNAobxXBdu8OoEjyVbRtlbA,2467
 botocore-1.38.38.dist-info/RECORD,,
+botocore-1.38.38.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
 botocore-1.38.38.dist-info/WHEEL,sha256=GV9aMThwP_4oNCtvEC2ec3qUYutgWeAzklro_0m4WJQ,91
 botocore-1.38.38.dist-info/top_level.txt,sha256=IdlNr9dnwi3lQt66dKnShE5HBUhIqBFqJmVhm11aijk,9
 botocore/__init__.py,sha256=UsbjRTZpg26imZIdm0PwzisSy1k_UXzkKGsOh9UJNfM,6648
