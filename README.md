@@ -1,14 +1,35 @@
 # ai_financial_advisor
 This is an AI agent designed to answer a range of user questions related to personal financial management and basic financial analysis tasks. It is not meant to provide professional advisor assistance or investment recommendations, as it lacks knowledge of advanced topics. However, it is capable of generating practical answers.
 
+For a week by week update, check out: https://www.notion.so/Week-by-Week-21832f83af6680098a51ea47354ebb27
+
 ## How it works 
+
 ### UI for Chat
+![Front End](./image/ui.png)
 
-### Optionally upload an excel file for some financial analysis and questioning
+### Front-End Interface
 
+- **Layout**: The conversation history is displayed in a scrollable container from the top, flowing downward, with the input box fixed at the bottom, mimicking Grok’s style.
+- **Styling**: Tailwind CSS provides a modern, responsive design. User messages are blue and right-aligned, while bot messages are gray and left-aligned.
+- **Functionality**: The interface fetches conversation history on load, allows users to send messages via a button or Enter key, and disables the send button during API requests.
+- **AWS Integration**: The front-end communicates with the back-end via API Gateway endpoints (/history and /ask). A user_id is stored locally for session consistency, with Cognito as an option for secure authentication.
+  
 ### Default behavior 
 
+The app will track the conversation by asking the user to identify the 4 fields: goals, income level, time frame, and perceived blockages. If the user does not provide this, the LLM behind the scenes will ask for clarification. Then, it will refer to a knowledge base, which contains the content from the Personal Financial Management PDF document listed in this repository. After consolidating all these pieces of info, it will then generate a helpful response to help the user achieve the goal in the time frame with the user's concerns and finaincial best practices from that particular document. 
+
 ## Architecture
+**Key Features:**
+
+- **Financial Detail Extraction:** Utilizes a Pydantic schema (`FinancialDetails`) and a dedicated extraction chain to parse user input and identify crucial financial information such as goals, income level, time frame, and perceived blockages. This structured extraction ensures that the chatbot accurately captures the user's financial situation.
+- **Conversation State Management:** Employs a `ConversationState` class to maintain a persistent record of the user's financial details throughout the conversation. This allows the chatbot to remember previously provided information and build upon it in subsequent interactions, leading to more coherent and context-aware advice. The `update_financial_details` method intelligently merges new information with existing details, and `get_summary_for_llm` provides a concise summary for the language model.
+- **Contextual Financial Advice:** The core of the chatbot's advice generation is driven by a `financial_advice_prompt`. This prompt is designed to incorporate the extracted financial details, the conversation history summary, and relevant context retrieved from a Pinecone vector store.
+- **Retrieval-Augmented Generation (RAG):** The system integrates a RAG approach. It uses `OllamaEmbeddings` to convert user queries into numerical representations and then queries a `PineconeVectorStore` (named "financial-advisor-index") to fetch semantically similar documents (context). This retrieved context enriches the LLM's understanding and allows it to generate more informed and accurate financial advice.
+- **Conditional Guidance:** The `manage_state_and_prepare_inputs` function intelligently assesses if critical financial information (goals, income level, time frame) is missing from the conversation. If so, it formulates a targeted follow-up question to gather the necessary details, ensuring the chatbot can provide comprehensive advice. This conditional logic is further managed by the `decide_output` function within the main chain.
+- **LangChain Integration:** The entire system is built using the LangChain framework, leveraging its capabilities for prompt templating, output parsing, and creating complex conversational chains.
+- **AWS BedRock Foundation Models and Pinecone Integration:** The chatbot utilizes AWS foundational models for its language model (`llama3`) and embeddings (`mxbai-embed-large`), and Pinecone as its vector database for efficient similarity search and retrieval.
+- **Environment Variable Management:** It uses `python-dotenv` to manage API keys and other configurations securely, ensuring that sensitive information is not hardcoded directly into the script.
 
 ### API Gateway
 POST /chat → StartExecutionLambda (starts Step Functions SM)
@@ -23,9 +44,9 @@ Return
 PresignerLambda for /upload (same as Option A).
 
 ### Monitoring & Tracing
-CloudWatch Logs & Metrics on each Lambda
-Step Functions Metrics & X-Ray end-to-end
-LangSmith in each relevant Lambda
+CloudWatch Logs & Metrics
+
+LangSmith Interface for Testing
 
 ### Benefits
 Built-in retry & error handling per step.
