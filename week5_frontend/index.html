@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LangChain Financial Advisor</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f7f6; color: #333; }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
+        .container { max-width: 800px; margin: 0 auto; background-color: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        #chat-container { border: 1px solid #e0e0e0; padding: 15px; height: 400px; overflow-y: auto; margin-bottom: 20px; background-color: #fafafa; border-radius: 5px; scroll-behavior: smooth; }
+        .message { margin-bottom: 15px; padding: 10px 15px; border-radius: 5px; max-width: 80%; }
+        .user { text-align: right; background-color: #e6f7ff; color: #0056b3; margin-left: auto; border-bottom-right-radius: 0; }
+        .assistant { text-align: left; background-color: #e9f0e9; color: #28a745; margin-right: auto; border-bottom-left-radius: 0; }
+        .input-area { display: flex; gap: 10px; }
+        #user-input { flex-grow: 1; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 1rem; }
+        button { padding: 12px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; transition: background-color 0.2s ease; }
+        button:hover { background-color: #0056b3; }
+        .error-message { color: red; font-weight: bold; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Financial Advisor Chatbot</h1>
+        <div id="chat-container"></div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Ask me a question about your finances...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+        <div id="error-display" class="error-message"></div>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const userInput = document.getElementById('user-input');
+            const chatContainer = document.getElementById('chat-container');
+            const errorDisplay = document.getElementById('error-display');
+            const question = userInput.value.trim();
+
+            if (!question) return;
+
+            errorDisplay.textContent = ''; // Clear previous errors
+
+            // Display user message
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user';
+            userMessageDiv.textContent = `You: ${question}`;
+            chatContainer.appendChild(userMessageDiv);
+            userInput.value = ''; // Clear input
+
+            // Scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            try {
+                const response = await fetch('/chat', { // Changed endpoint to /chat
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const assistantResponse = data.answer || "No response received.";
+
+                // Display assistant response
+                const assistantMessageDiv = document.createElement('div');
+                assistantMessageDiv.className = 'message assistant';
+                assistantMessageDiv.textContent = `Assistant: ${assistantResponse}`;
+                chatContainer.appendChild(assistantMessageDiv);
+
+            } catch (error) {
+                console.error("Error fetching response:", error);
+                errorDisplay.textContent = `Error: ${error.message}. Please try again.`;
+            } finally {
+                // Scroll to bottom after receiving response
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        }
+
+        // Allow sending message with Enter key
+        document.getElementById('user-input').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
